@@ -43,8 +43,8 @@ data "aws_subnets" "public" {
   }
 
   filter {
-    name   = "tag:Tier"
-    values = ["public"]
+    name   = "tag:Network"
+    values = ["Public"]
   }
 
   dynamic "filter" {
@@ -69,8 +69,8 @@ data "aws_subnets" "private" {
   }
 
   filter {
-    name   = "tag:Tier"
-    values = ["private"]
+    name   = "tag:Network"
+    values = ["Private"]
   }
 
   dynamic "filter" {
