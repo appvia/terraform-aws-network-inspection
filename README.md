@@ -5,7 +5,7 @@ This module uses data resources to inspect the available AWS VPCs and subnets in
 ## Features
 
 - List all available VPCs and their details
-- List all available subnets and their details
+- Automatically categorize subnets into public and private based on the "Tier" tag
 - Filter VPCs and subnets by tags
 - Get VPC and subnet attributes including CIDR blocks, availability zones, etc.
 - Organize subnets by VPC
@@ -31,8 +31,12 @@ output "all_vpcs" {
   value = module.network_inspection.vpc_ids
 }
 
-output "all_subnets" {
-  value = module.network_inspection.subnet_ids
+output "public_subnets" {
+  value = module.network_inspection.public_subnet_ids
+}
+
+output "private_subnets" {
+  value = module.network_inspection.private_subnet_ids
 }
 ```
 
@@ -47,10 +51,16 @@ module "network_inspection" {
   }
   
   subnet_tags = {
-    Type = "public"
+    Type = "application"
   }
 }
 ```
+
+## Subnet Classification
+
+Subnets are automatically classified as:
+- **Public subnets**: Subnets with tag `Tier = public`
+- **Private subnets**: Subnets with tag `Tier = private`
 
 ## Inputs
 
@@ -65,14 +75,20 @@ module "network_inspection" {
 |------|-------------|
 | vpc_ids | List of all VPC IDs that match the filter criteria |
 | vpcs | Map of VPC ID to VPC details |
-| subnet_ids | List of all subnet IDs that match the filter criteria |
-| subnets | Map of subnet ID to subnet details |
+| public_subnet_ids | List of all public subnet IDs that match the filter criteria |
+| private_subnet_ids | List of all private subnet IDs that match the filter criteria |
+| public_subnets | Map of public subnet ID to subnet details |
+| private_subnets | Map of private subnet ID to subnet details |
 | vpc_cidr_blocks | Map of VPC ID to CIDR block |
 | vpc_names | Map of VPC ID to Name tag (if available) |
-| subnet_cidr_blocks | Map of subnet ID to CIDR block |
-| subnet_availability_zones | Map of subnet ID to availability zone |
-| subnet_names | Map of subnet ID to Name tag (if available) |
-| subnets_by_vpc | Map of VPC ID to list of subnet IDs in that VPC |
+| public_subnet_cidr_blocks | Map of public subnet ID to CIDR block |
+| private_subnet_cidr_blocks | Map of private subnet ID to CIDR block |
+| public_subnet_availability_zones | Map of public subnet ID to availability zone |
+| private_subnet_availability_zones | Map of private subnet ID to availability zone |
+| public_subnet_names | Map of public subnet ID to Name tag (if available) |
+| private_subnet_names | Map of private subnet ID to Name tag (if available) |
+| public_subnets_by_vpc | Map of VPC ID to list of public subnet IDs in that VPC |
+| private_subnets_by_vpc | Map of VPC ID to list of private subnet IDs in that VPC |
 
 ## Example Output
 
@@ -85,8 +101,10 @@ vpc_ids = [
   "vpc-012345abcdef",
   "vpc-67890ghijkl"
 ]
-subnet_ids = [
-  "subnet-123abc456def",
+public_subnet_ids = [
+  "subnet-123abc456def"
+]
+private_subnet_ids = [
   "subnet-789ghi012jkl"
 ]
 vpc_cidr_blocks = {
